@@ -15,18 +15,6 @@ d3.json(url).then(function (data) {
         <hr><p>${new Date(feature.properties.time)}</p>`);
     }
 
-    // Display earthquakes with magnitude > 7
-    // Issue1 popup doesn't show
-    // Issue2 can I restrict overlay map selectionn to only 1
-    function onEachFeature2 (feature, layer) {
-        if (feature.properties.mag > 7) {
-            layer.bindPopup(`<h3>Location: ${feature.properties.place}<br>
-            Magnitude: ${feature.properties.mag}<br>
-            Depth: ${feature.geometry.coordinates[2]}</h3>
-            <hr><p>${new Date(feature.properties.time)}</p>`)
-        }
-    }
-
     // Create a circle marker for each earthquake
     function createCircleMarker(feature, layer) {
         let options = {
@@ -35,7 +23,7 @@ d3.json(url).then(function (data) {
             fillColor: DepthColor(feature.geometry.coordinates[2]),
             weight: 0.5,
             opacity: 0.8,
-            fillOpacity: 0.75
+            fillOpacity: 0.6
             
         }
         return L.circleMarker(layer, options);
@@ -46,7 +34,7 @@ d3.json(url).then(function (data) {
         if (magnitude === 0) { // Account for Earthquakes with magnitude of 0 or less
             return 1;
         }
-        return magnitude * 5; // Presents an issue when noting Magnitude
+        return magnitude * 4 // Presents an issue when noting Magnitude
     }
 
     // Colour of circle marker varies with depth - range: [0,1000]
@@ -78,10 +66,6 @@ d3.json(url).then(function (data) {
         pointToLayer: createCircleMarker
     });
 
-    var earthquakes2 = L.geoJSON(data.features, {
-        onEachFeature: onEachFeature2,
-        pointToLayer: createCircleMarker
-    });
 
     // Create base layers
     var streetmap =  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -107,23 +91,24 @@ d3.json(url).then(function (data) {
     };
 
     // Create overlayMaps object to hold overlay layers
-    var overLayMaps = {
+    var overlayMaps = {
         "Earthquakes": earthquakes,
-        "Earthquakes with Magnitude > 7": earthquakes2
     };
     
     // Create map object
     // Centre of map [0, 0]
     var myMap = L.map("map", { // reference to div id in html
         center: [-25.2744, 133.7751],
-        zoom: 3,
+        zoom: 4,
         layers: [streetmap, earthquakes] // Default map
     });
 
     // Create layer control
-    L.control.layers(baseMaps, overLayMaps, {
+    L.control.layers(baseMaps, overlayMaps, {
         collapsed: false
     }).addTo(myMap);
+
+    // FUTURE BUILD: Create layer control and ensure that only one overlay can be selected at a time.
 
     
     // Create Legend - Refer to L15.2 Activity 04
@@ -138,7 +123,7 @@ d3.json(url).then(function (data) {
         let legendInfo = "<h4>Depth (KM)</h4>";
         div.innerHTML = legendInfo
 
-        // Loop through depth limits and generate a label with a coloured square to represent each grade.
+        // Loop through depth limits and generate a label with a coloured square to represent each.
         for (let i = 0; i < limits.length; i++) {
             div.innerHTML += `<div><i style="background: ${colors[i]}"></i> ${limits[i]}</div>`;
         }
