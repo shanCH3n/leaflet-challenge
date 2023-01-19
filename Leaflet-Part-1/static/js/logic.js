@@ -118,14 +118,6 @@ d3.json(url).then(function (data) {
         let colors = ['#ffff99', '#ffcc99', '#ff9999', '#cc99ff', '#aa80ff', '#5c5c8a'];
         var labels = [];
 
-        // Add the minimum and maximum
-        // TBC Add Legend Title  "<h1>Earthquake Depth (KM)</h1>" + 
-        let legendInfo = 
-        "<div class=\"labels\">" + 
-        "</div>";
-        
-        div.innerHTML = legendInfo;
-
         // Loop through depth limits and generate a label with a coloured square to represent each grade.
         limits.forEach(function(limit, index) {
             labels.push("<li style=\"background-color: " + colors[index] + "; width: 20px" + "; height: 20px" + "\"></li>" + limit);
