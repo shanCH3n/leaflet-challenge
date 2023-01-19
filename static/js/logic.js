@@ -20,7 +20,7 @@ d3.json(url).then(function (data) {
         let options = {
             radius: MagRad(feature.properties.mag),
             color: DepthColor(feature.geometry.coordinates[2]),
-            weight: 1,
+            weight: 0.50,
             opacity: 0.75,
             fillOpacity: 0.40
             
@@ -30,7 +30,7 @@ d3.json(url).then(function (data) {
 
     // Radius of circle marker varies with magnitude - range [-1.0, 10.0]
     function MagRad(magnitude) {
-        if (magnitude === 0) { //Scaling for Earthquakes with magnitude of 0 or less
+        if (magnitude === 0) { // Account for Earthquakes with magnitude of 0 or less
             return 1;
         }
         return magnitude * 5;
@@ -39,40 +39,29 @@ d3.json(url).then(function (data) {
     // Colour of circle marker varies with depth - range: [0,1000]
     function DepthColor(depth) {
         if (depth > 90) {
-            return "#330000";
+            return "#5c5c8a";
         }
-        if (depth > 80) {
-            return "#660000";
+        if (depth >= 70 && depth <= 90) {
+            return "#aa80ff";
         }
-        if (depth > 70) {
-            return "#990000";
+        if (depth >= 50 && depth < 70) {
+            return "#cc99ff";
         }
-        if (depth > 60) {
-            return "#CC0000";
+        if (depth >= 30 && depth < 50) {
+            return "#ff9999";
         }
-        if (depth > 50) {
-            return "#CC6600";
-        }
-        if (depth > 40) {
-            return "#FF8000";
-        }
-        if (depth > 30) {
-            return "#FF9933";
-        }
-        if (depth > 20) {
-            return "#FFB266";
-        }
-        if (depth > 10) {
-            return "#FFFF00";
+        if (depth >= 10 && depth < 30) {
+            return "#ffcc99";
         }
         else {
-            return "#FFFF99";
+            return "#ffff99";
         }
     }
 
 
     // Create a GeoJSON layer containing the feature array on the earthquake data object.
     // Run the onEachFeature function once for each piece of data in the array
+    // Try creating a function with Earthquakes > Magnitude 8 TBC
     var earthquakes = L.geoJSON(data.features, {
         onEachFeature: onEachFeature,
         pointToLayer: createCircleMarker
@@ -88,10 +77,17 @@ d3.json(url).then(function (data) {
         maxZoom: 16
     });
 
+    var topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        maxZoom: 17,
+        attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+    });
+
+
     // Define baseMaps object to hold base layers
     var baseMaps = {
-        "Street Map": streetmap,
-        "Nat Geo View": natgeo
+        "Street Map View": streetmap,
+        "Nat Geo View": natgeo,
+        "Topographical View": topo
     };
 
     // Create overlayMaps object to hold overlay layers
@@ -103,7 +99,7 @@ d3.json(url).then(function (data) {
     var myMap = L.map("map", { // reference to div id in html
         center: [-25.274398, 133.775136],
         zoom: 3,
-        layers: [streetmap] // exclude natgeo for now
+        layers: [streetmap, earthquakes] // Default map
     });
 
     // Create layer control
@@ -112,25 +108,34 @@ d3.json(url).then(function (data) {
     }).addTo(myMap);
 
     
-    // Create Legend
-   //let legend = L.control({position: "bottomright"});
-    //legend.onAdd = function () {
-        //let div = L.DomUtil.create("div", "info legend");
-        //let colors = 
-        //let labels = [];
+    // Create Legend - Refer to L15.2 Activity 04
+   var legend = L.control({position: "bottomright"});
 
-    //}
+    legend.onAdd = function () {
+        let div = L.DomUtil.create("div", "info legend");
+        let limits = ['-10-10', '10-30', '30-50', '50-70', '70-90', '90+'];
+        let colors = ['#ffff99', '#ffcc99', '#ff9999', '#cc99ff', '#aa80ff', '#5c5c8a'];
+        var labels = [];
 
-    // Add the legend to the map
+        // Add the minimum and maximum
+        let legendInfo = 
+        "<h1>Earthquake Depth (KM)</h1>" + 
+        "<div class=\"labels\">" + 
+        "</div>";
+        
+        div.innerHTML = legendInfo;
 
+        // Loop through depth limits and generate a label with a coloured square to represent each grade.
+        limits.forEach(function(limit, index) {
+            labels.push("<li style=\"background-color: " + colors[index] + ";width: 20px" + "; height: 20px" + "\"></li>" + limit);
+          });
+
+        div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+        return div;
+    };
+
+    // Add the legend to the map 
+    legend.addTo(myMap);
 
 });
 
-
-// L.circleMarker
-// features.geometry.coordinates[0] = longitude
-// features.geometry.coordinates[1] = latitude
-// features.geometry.coordinates[2] = depth
-// features.properties.mag = Magnitude
-// features.properties.place = Place
-// Activity 04 in Lession 15.2 for Legend Code
