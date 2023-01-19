@@ -9,6 +9,11 @@ html {
   height: 100%;
 }
 
+h4 {
+  padding: 5px;
+  margin: 0px;
+}
+
 .legend {
   padding: 8px 10px;
   font: 14px Arial, Helvetica, sans-serif;

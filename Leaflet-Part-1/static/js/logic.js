@@ -71,10 +71,8 @@ d3.json(url).then(function (data) {
         }
     }
 
-
     // Create a GeoJSON layer containing the feature array on the earthquake data object.
     // Run the onEachFeature function once for each piece of data in the array
-    // Try creating a function with Earthquakes > Magnitude 8 TBC
     var earthquakes = L.geoJSON(data.features, {
         onEachFeature: onEachFeature,
         pointToLayer: createCircleMarker
@@ -114,9 +112,10 @@ d3.json(url).then(function (data) {
         "Earthquakes with Magnitude > 7": earthquakes2
     };
     
-    // Create map object centred on Australia
+    // Create map object
+    // Centre of map [0, 0]
     var myMap = L.map("map", { // reference to div id in html
-        center: [-25.274398, 133.775136],
+        center: [-25.2744, 133.7751],
         zoom: 3,
         layers: [streetmap, earthquakes] // Default map
     });
@@ -134,17 +133,18 @@ d3.json(url).then(function (data) {
         let div = L.DomUtil.create("div", "info legend");
         let limits = ['-10-10', '10-30', '30-50', '50-70', '70-90', '90+'];
         let colors = ['#ffff99', '#ffcc99', '#ff9999', '#cc99ff', '#aa80ff', '#5c5c8a'];
-        var labels = [];
+        
+        // Forrmat legend
+        let legendInfo = "<h4>Depth (KM)</h4>";
+        div.innerHTML = legendInfo
 
         // Loop through depth limits and generate a label with a coloured square to represent each grade.
-        limits.forEach(function(limit, index) {
-            labels.push("<li style=\"background-color: " + colors[index] + "; width: 20px" + "; height: 20px" + "\"></li>" + limit);
-          });
+        for (let i = 0; i < limits.length; i++) {
+            div.innerHTML += `<div><i style="background: ${colors[i]}"></i> ${limits[i]}</div>`;
+        }
 
-        div.innerHTML += "<ul>" + labels.join("") + "</ul>";
         return div;
     };
-
     // Add the legend to the map 
     legend.addTo(myMap);
 
