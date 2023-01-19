@@ -1,6 +1,6 @@
 // Leaflet-Part-1
 
-// Store url to earthquake data in an object
+// Store url to Earthquake data
 // Examine all Earthquakes in the past month
 var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
 
@@ -83,15 +83,15 @@ d3.json(url).then(function (data) {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     });
 
-    //var natgeo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {
-        //attribution: 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
-        //maxZoom: 16
-    //});
+    var natgeo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
+        maxZoom: 16
+    });
 
     // Define baseMaps object to hold base layers
     var baseMaps = {
         "Street Map": streetmap,
-        //"Nat Geo View": natgeo
+        "Nat Geo View": natgeo
     };
 
     // Create overlayMaps object to hold overlay layers
@@ -99,9 +99,9 @@ d3.json(url).then(function (data) {
         "Earthquakes": earthquakes
     };
     
-    // Create map object
+    // Create map object centred on Australia
     var myMap = L.map("map", { // reference to div id in html
-        centre: [-25.274398, 133.775136],
+        center: [-25.274398, 133.775136],
         zoom: 3,
         layers: [streetmap] // exclude natgeo for now
     });
