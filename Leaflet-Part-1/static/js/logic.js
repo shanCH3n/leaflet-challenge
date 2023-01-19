@@ -19,10 +19,11 @@ d3.json(url).then(function (data) {
     function createCircleMarker(feature, layer) {
         let options = {
             radius: MagRad(feature.properties.mag),
-            color: DepthColor(feature.geometry.coordinates[2]),
-            weight: 0.50,
-            opacity: 0.75,
-            fillOpacity: 0.40
+            color: 'black',
+            fillColor: DepthColor(feature.geometry.coordinates[2]),
+            weight: 0.5,
+            opacity: 0.8,
+            fillOpacity: 0.75
             
         }
         return L.circleMarker(layer, options);
@@ -118,8 +119,8 @@ d3.json(url).then(function (data) {
         var labels = [];
 
         // Add the minimum and maximum
+        // TBC Add Legend Title  "<h1>Earthquake Depth (KM)</h1>" + 
         let legendInfo = 
-        "<h1>Earthquake Depth (KM)</h1>" + 
         "<div class=\"labels\">" + 
         "</div>";
         
@@ -127,7 +128,7 @@ d3.json(url).then(function (data) {
 
         // Loop through depth limits and generate a label with a coloured square to represent each grade.
         limits.forEach(function(limit, index) {
-            labels.push("<li style=\"background-color: " + colors[index] + ";width: 20px" + "; height: 20px" + "\"></li>" + limit);
+            labels.push("<li style=\"background-color: " + colors[index] + "; width: 20px" + "; height: 20px" + "\"></li>" + limit);
           });
 
         div.innerHTML += "<ul>" + labels.join("") + "</ul>";
