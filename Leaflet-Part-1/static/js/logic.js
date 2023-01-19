@@ -15,6 +15,18 @@ d3.json(url).then(function (data) {
         <hr><p>${new Date(feature.properties.time)}</p>`);
     }
 
+    // Display earthquakes with magnitude > 7
+    // Issue1 popup doesn't show
+    // Issue2 can I restrict overlay map selectionn to only 1
+    function onEachFeature2 (feature, layer) {
+        if (feature.properties.mag > 7) {
+            layer.bindPopup(`<h3>Location: ${feature.properties.place}<br>
+            Magnitude: ${feature.properties.mag}<br>
+            Depth: ${feature.geometry.coordinates[2]}</h3>
+            <hr><p>${new Date(feature.properties.time)}</p>`)
+        }
+    }
+
     // Create a circle marker for each earthquake
     function createCircleMarker(feature, layer) {
         let options = {
@@ -34,7 +46,7 @@ d3.json(url).then(function (data) {
         if (magnitude === 0) { // Account for Earthquakes with magnitude of 0 or less
             return 1;
         }
-        return magnitude * 5;
+        return magnitude * 5; // Presents an issue when noting Magnitude
     }
 
     // Colour of circle marker varies with depth - range: [0,1000]
@@ -68,6 +80,11 @@ d3.json(url).then(function (data) {
         pointToLayer: createCircleMarker
     });
 
+    var earthquakes2 = L.geoJSON(data.features, {
+        onEachFeature: onEachFeature2,
+        pointToLayer: createCircleMarker
+    });
+
     // Create base layers
     var streetmap =  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -93,7 +110,8 @@ d3.json(url).then(function (data) {
 
     // Create overlayMaps object to hold overlay layers
     var overLayMaps = {
-        "Earthquakes": earthquakes
+        "Earthquakes": earthquakes,
+        "Earthquakes with Magnitude > 7": earthquakes2
     };
     
     // Create map object centred on Australia
